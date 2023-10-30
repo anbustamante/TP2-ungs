@@ -14,7 +14,7 @@ public class Fondo {
 	public Fondo(double x, double y) {
 		this.x = x;
 		this.y = y;
-		imgFondo = Herramientas.cargarImagen("fondo.png");
+		imgFondo = Herramientas.cargarImagen("fondo.jpg");
 		anguloFondo=0;
 	}
 	
