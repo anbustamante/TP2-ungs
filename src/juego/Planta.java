@@ -16,6 +16,7 @@ public class Planta {
 		this.x = x;
 		this.y = y;
 		img1 = Herramientas.cargarImagen("plantaa.png");
+		this.existe = true;
 	}
 	
 	public void dibujarse(Entorno entorno)
