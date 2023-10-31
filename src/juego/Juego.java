@@ -12,7 +12,7 @@ public class Juego extends InterfaceJuego {
 	Layka layka;
 	Fondo fondo;
 	Rayo rayo1;
-	CartelPerdiste cartel1;
+	Cartel cartel1;
 	Planta[] plantas = new Planta[4];
 	Auto[] autos = new Auto[2];
 	boolean hayJuego = true;
@@ -29,7 +29,7 @@ public class Juego extends InterfaceJuego {
 		this.entorno = new Entorno(this, "Layka", 800, 600);
 		fondo = new Fondo(400, 300);
 		layka = new Layka(400, 550);
-		rayo1 = new Rayo(-300,-300,0);
+		rayo1 = new Rayo(400,300,0);
 		autos[0] = new Auto(400, 275);
 		autos[1] = new Auto(500, 550);
 		plantas[0] = new Planta(200, 300);
@@ -58,15 +58,9 @@ public class Juego extends InterfaceJuego {
 		// dibujo fondo
 		fondo.dibujarse(entorno);
 
-
 		// controles layka
-		
-			entorno.dibujarCirculo(80,342, 10, Color.red);
+		if(hayJuego) {
 			
-			
-			if(colisionRectangulo(layka.x+10, layka.y, manzanas[0].x, manzanas[0].y, 278,201)) {
-				System.out.println("colisiona");
-			}
 			if (entorno.estaPresionada(entorno.TECLA_DERECHA) && layka.x < 780 && 
 					!colisionRectangulo(layka.x+21, layka.y, manzanas[0].x, manzanas[0].y, 278,201) &&
 					!colisionRectangulo(layka.x+21, layka.y, manzanas[1].x, manzanas[1].y, 278,201) &&
@@ -141,52 +135,78 @@ public class Juego extends InterfaceJuego {
 		}
 
 		// perder
-		if (colision(layka.x, layka.y, plantas[0].x, plantas[0].y, 40)
-				|| colision(layka.x, layka.y, autos[0].x, autos[0].y, 40)) {
-
-			hayJuego = false;
-
+		//si colisiona contra una planta = pierde
+		for(int i=0;i<plantas.length;i++) {
+			if (colision(layka.x, layka.y, plantas[0].x, plantas[0].y, 40)){
+				cartel1 = new Cartel(400,300,0);
+				cartel1.dibujarse(entorno);
+				hayJuego = false;
+			}
 		}
+		//si colisiona contra un auto = pierde
+		if(colision(layka.x, layka.y, autos[0].x, autos[0].y, 40) 
+				|| colision(layka.x, layka.y, autos[1].x, autos[1].y, 40)) {
+			cartel1 = new Cartel(400,300,0);
+			cartel1.dibujarse(entorno);
+			hayJuego = false;
+		}
+		
 		// disparar rayo
 		if (entorno.sePresiono(entorno.TECLA_ESPACIO) && !rayo1.existe) {
 			rayo1 = new Rayo(layka.x, layka.y, layka.direccion);
-
-			rayo1.dibujarse(entorno);
+			System.out.println(rayo1);
+			rayo1.dibujarse(entorno,layka.x,layka.y);
 			rayo1.existe = true;
 		}
-		// continuar movimiento del rayo
 		if (rayo1.existe && rayo1.tiempoDeRayo > 0) {
-			 
-				rayo1.dibujarse(entorno);
-				rayo1.tiempoDeRayo -= 1;
-
-				// busco colision del rayo con plantas
-				for (int i = 0; i < 4; i++) {
-					if (colision(rayo1.x, rayo1.y, plantas[i].x, plantas[i].y, 80)) {
-						puntaje += 5;
-						rayo1.existe = false;
+			rayo1.tiempoDeRayo -= 1;
+			rayo1.dibujarse(entorno,layka.x,layka.y);
+			
+			for(int i=0; i<4;i++) {
+				if(rayo1.direccion==0) {
+					if(colision(layka.x, layka.y-180, plantas[i].x, plantas[i].y, 40) 
+						||	colision(layka.x, layka.y-100, plantas[i].x, plantas[i].y, 40)){
 						plantas[i].existe = false;
-						plantas[i].x = -80;
-						plantas[i].y = -80;
-						System.out.println("colision");
-
+						plantas[i].x = -300;
+						plantas[i].y = -300;
 					}
-				}		
+				}else if(rayo1.direccion==1) {
+					if(colision(layka.x+180, layka.y, plantas[i].x, plantas[i].y, 40) 
+							||	colision(layka.x+100, layka.y, plantas[i].x, plantas[i].y, 40)){
+						plantas[i].existe = false;
+						plantas[i].x = -300;
+						plantas[i].y = -300;
+						}
+				}else if(rayo1.direccion==2) {
+					if(colision(layka.x, layka.y+180, plantas[i].x, plantas[i].y, 40) 
+							||	colision(layka.x, layka.y+100, plantas[i].x, plantas[i].y, 40)){
+						plantas[i].existe = false;	
+						plantas[i].x = -300;
+						plantas[i].y = -300;
+						}
+				}else if(rayo1.direccion==3) {
+					if(colision(layka.x-180, layka.y, plantas[i].x, plantas[i].y, 40) 
+							||	colision(layka.x-100, layka.y, plantas[i].x, plantas[i].y, 40)){
+						plantas[i].existe = false;
+						plantas[i].x = -300;
+						plantas[i].y = -300;
+						}
+				}
+			}
+			
 			
 		}else {
 			rayo1.existe = false;
 		}
+		
+	}else {
+		cartel1.dibujarse(entorno);
+	}
 
 	}
 
 	public boolean colision(double x1, double y1, double x2, double y2, double dist) {
 		return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) < dist * dist;
-	}
-	public boolean colisionaConManzanasPorDerecha(Manzana manzana) {
-		for(int i=0;i<4;i++) {
-			colisionRectangulo(layka.x+21, layka.y, manzanas[i].x, manzanas[i].y, 278,201);
-		}
-		return true;
 	}
 	public boolean colisionRectangulo(double puntoX, double puntoY, double rectanguloX, double rectanguloY, double ancho, double alto) {
 	    return puntoX >= rectanguloX && puntoX <= rectanguloX + ancho && puntoY >= rectanguloY && puntoY <= rectanguloY + alto;
