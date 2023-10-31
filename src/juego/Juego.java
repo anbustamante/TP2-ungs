@@ -17,7 +17,7 @@ public class Juego extends InterfaceJuego {
 	Auto[] autos = new Auto[2];
 	boolean hayJuego = true;
 	int puntaje = 0;
-	Manzana manzana;
+	Manzana[] manzanas = new Manzana[4];
 
 
 
@@ -36,8 +36,10 @@ public class Juego extends InterfaceJuego {
 		plantas[1] = new Planta(600, 20);
 		plantas[2] = new Planta(30, 20);
 		plantas[3] = new Planta(750, 300);
-		manzana = new Manzana(217,160);
-	
+		manzanas[0] = new Manzana(80,60);
+		manzanas[1] = new Manzana(435,60);
+		manzanas[2] = new Manzana(80,342);
+		manzanas[3] = new Manzana(435, 342);
 
 		// Inicializar lo que haga falta para el juego
 		// ...
@@ -55,19 +57,45 @@ public class Juego extends InterfaceJuego {
 	public void tick() {
 		// dibujo fondo
 		fondo.dibujarse(entorno);
-		manzana.dibujarse(entorno);
 
 
 		// controles layka
-		if (entorno.estaPresionada(entorno.TECLA_DERECHA) && layka.x < 780 ){
-		    layka.moverDerecha();
-		} else if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA) && layka.x > 20) {
-		    layka.moverIzquierda();
-		} else if (entorno.estaPresionada(entorno.TECLA_ARRIBA) && layka.y > 20) {
-		    layka.moverArriba();
-		} else if (entorno.estaPresionada(entorno.TECLA_ABAJO) && layka.y < 580) {
-		    layka.moverAbajo();
-		}
+		
+			entorno.dibujarCirculo(80,342, 10, Color.red);
+			
+			
+			if(colisionRectangulo(layka.x+10, layka.y, manzanas[0].x, manzanas[0].y, 278,201)) {
+				System.out.println("colisiona");
+			}
+			if (entorno.estaPresionada(entorno.TECLA_DERECHA) && layka.x < 780 && 
+					!colisionRectangulo(layka.x+21, layka.y, manzanas[0].x, manzanas[0].y, 278,201) &&
+					!colisionRectangulo(layka.x+21, layka.y, manzanas[1].x, manzanas[1].y, 278,201) &&
+					!colisionRectangulo(layka.x+21, layka.y, manzanas[2].x, manzanas[2].y, 278,201) &&
+					!colisionRectangulo(layka.x+21, layka.y, manzanas[3].x, manzanas[3].y, 278,201)){
+			    layka.moverDerecha();
+			}
+			
+			if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA) && layka.x > 20
+					&& !colisionRectangulo(layka.x-21, layka.y, manzanas[0].x, manzanas[0].y, 278,201)
+					&& !colisionRectangulo(layka.x-21, layka.y, manzanas[1].x, manzanas[1].y, 278,201)
+					&& !colisionRectangulo(layka.x-21, layka.y, manzanas[2].x, manzanas[2].y, 278,201)
+					&& !colisionRectangulo(layka.x-21, layka.y, manzanas[3].x, manzanas[3].y, 278,201)) {
+			    layka.moverIzquierda();
+			}
+			if (entorno.estaPresionada(entorno.TECLA_ARRIBA) && layka.y > 20
+					&& !colisionRectangulo(layka.x, layka.y-21,manzanas[0].x, manzanas[0].y, 278,201)
+					&& !colisionRectangulo(layka.x, layka.y-21,manzanas[1].x, manzanas[1].y, 278,201)
+					&& !colisionRectangulo(layka.x, layka.y-21,manzanas[2].x, manzanas[2].y, 278,201)
+					&& !colisionRectangulo(layka.x, layka.y-21,manzanas[3].x, manzanas[3].y, 278,201)) {
+			    layka.moverArriba();
+			}
+			if (entorno.estaPresionada(entorno.TECLA_ABAJO) && layka.y < 580
+					&& !colisionRectangulo(layka.x, layka.y+21, manzanas[0].x, manzanas[0].y, 278,201)
+					&& !colisionRectangulo(layka.x, layka.y+21,manzanas[1].x, manzanas[1].y, 278,201)
+					&& !colisionRectangulo(layka.x, layka.y+21,manzanas[2].x, manzanas[2].y, 278,201)
+					&& !colisionRectangulo(layka.x, layka.y+21,manzanas[3].x, manzanas[3].y, 278,201)) {
+			    layka.moverAbajo();
+			}
 
 			
 			
@@ -143,15 +171,7 @@ public class Juego extends InterfaceJuego {
 						System.out.println("colision");
 
 					}
-				}
-				// logica para cuando colisiona con autos
-				if (colision(rayo1.x, rayo1.y, autos[0].x, autos[0].y, 80)) {
-					rayo1.existe = false;
-					rayo1.x = -200;
-					rayo1.y = -200;
-					System.out.println("colision");
-				}
-			
+				}		
 			
 		}else {
 			rayo1.existe = false;
@@ -161,6 +181,15 @@ public class Juego extends InterfaceJuego {
 
 	public boolean colision(double x1, double y1, double x2, double y2, double dist) {
 		return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) < dist * dist;
+	}
+	public boolean colisionaConManzanasPorDerecha(Manzana manzana) {
+		for(int i=0;i<4;i++) {
+			colisionRectangulo(layka.x+21, layka.y, manzanas[i].x, manzanas[i].y, 278,201);
+		}
+		return true;
+	}
+	public boolean colisionRectangulo(double puntoX, double puntoY, double rectanguloX, double rectanguloY, double ancho, double alto) {
+	    return puntoX >= rectanguloX && puntoX <= rectanguloX + ancho && puntoY >= rectanguloY && puntoY <= rectanguloY + alto;
 	}
 
 	@SuppressWarnings("unused")
