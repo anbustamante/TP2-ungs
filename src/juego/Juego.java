@@ -57,7 +57,7 @@ public class Juego extends InterfaceJuego {
 	public void tick() {
 		// dibujo fondo
 		fondo.dibujarse(entorno);
-
+		
 		// controles layka
 		if(hayJuego) {
 			
@@ -150,6 +150,11 @@ public class Juego extends InterfaceJuego {
 			cartel1.dibujarse(entorno);
 			hayJuego = false;
 		}
+		//ganar
+		if (puntaje == 20) {
+			cartel1 = new Cartel(400,300,1);
+			hayJuego = false;
+		}
 		
 		// disparar rayo
 		if (entorno.sePresiono(entorno.TECLA_ESPACIO) && !rayo1.existe) {
@@ -169,6 +174,7 @@ public class Juego extends InterfaceJuego {
 						plantas[i].existe = false;
 						plantas[i].x = -300;
 						plantas[i].y = -300;
+						puntaje += 5;
 					}
 				}else if(rayo1.direccion==1) {
 					if(colision(layka.x+180, layka.y, plantas[i].x, plantas[i].y, 40) 
@@ -176,6 +182,7 @@ public class Juego extends InterfaceJuego {
 						plantas[i].existe = false;
 						plantas[i].x = -300;
 						plantas[i].y = -300;
+						puntaje += 5;
 						}
 				}else if(rayo1.direccion==2) {
 					if(colision(layka.x, layka.y+180, plantas[i].x, plantas[i].y, 40) 
@@ -183,6 +190,8 @@ public class Juego extends InterfaceJuego {
 						plantas[i].existe = false;	
 						plantas[i].x = -300;
 						plantas[i].y = -300;
+						puntaje += 5;
+						
 						}
 				}else if(rayo1.direccion==3) {
 					if(colision(layka.x-180, layka.y, plantas[i].x, plantas[i].y, 40) 
@@ -190,6 +199,7 @@ public class Juego extends InterfaceJuego {
 						plantas[i].existe = false;
 						plantas[i].x = -300;
 						plantas[i].y = -300;
+						puntaje += 5;
 						}
 				}
 			}
@@ -198,9 +208,13 @@ public class Juego extends InterfaceJuego {
 		}else {
 			rayo1.existe = false;
 		}
-		
+		entorno.cambiarFont("Arial bold",16,Color.white);
+		entorno.escribirTexto("Puntaje: " + puntaje, 700, 20);
 	}else {
 		cartel1.dibujarse(entorno);
+		if(entorno.sePresiono(entorno.TECLA_ESPACIO)) {
+			reiniciar();
+		}
 	}
 
 	}
@@ -210,6 +224,24 @@ public class Juego extends InterfaceJuego {
 	}
 	public boolean colisionRectangulo(double puntoX, double puntoY, double rectanguloX, double rectanguloY, double ancho, double alto) {
 	    return puntoX >= rectanguloX && puntoX <= rectanguloX + ancho && puntoY >= rectanguloY && puntoY <= rectanguloY + alto;
+	}
+	
+	public void reiniciar() {
+		fondo = new Fondo(400, 300);
+		layka = new Layka(400, 550);
+		rayo1 = new Rayo(400,300,0);
+		autos[0] = new Auto(400, 275);
+		autos[1] = new Auto(500, 550);
+		plantas[0] = new Planta(200, 300);
+		plantas[1] = new Planta(600, 20);
+		plantas[2] = new Planta(30, 20);
+		plantas[3] = new Planta(750, 300);
+		manzanas[0] = new Manzana(80,60);
+		manzanas[1] = new Manzana(435,60);
+		manzanas[2] = new Manzana(80,342);
+		manzanas[3] = new Manzana(435, 342);
+		hayJuego = true;
+		puntaje = 0;
 	}
 
 	@SuppressWarnings("unused")

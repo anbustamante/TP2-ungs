@@ -20,7 +20,7 @@ public class Cartel {
 		this.y = y;
 		img1 = Herramientas.cargarImagen("perdiste-cartel.png");
 		img2 = Herramientas.cargarImagen("ganaste-cartel.png");
-		
+		this.tipo = tipo;
 	}
 	
 	public void dibujarse(Entorno entorno)
